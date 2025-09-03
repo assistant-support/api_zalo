@@ -32,7 +32,8 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Cài đặt chỉ các dependencies cần thiết cho production
-COPY package.json .
+# THAY ĐỔI Ở ĐÂY: Sao chép cả package-lock.json
+COPY package*.json ./
 RUN npm ci --omit=dev
 
 # Sao chép các file đã build và các file custom server
