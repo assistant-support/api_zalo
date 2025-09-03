@@ -48,8 +48,8 @@ RUN chown -R nextjs:nodejs .next
 # Chuyển sang user nextjs
 USER nextjs
 
-EXPOSE 4002
-ENV PORT=4002
+EXPOSE 4003
+ENV PORT=4003
 
 # Lệnh khởi động vẫn là file server.js
 CMD ["node", "server.js"]
