@@ -1,69 +1,98 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { getZaloState } from '@/app/actions/zalo.action';
+import { useState, useEffect, useRef } from 'react';
+import io from 'socket.io-client';
 import MessageList from '@/components/MessageList';
-import io from 'socket.io-client'; // Import socket.io-client
 
 export default function ZaloPage() {
     const [status, setStatus] = useState('Đang kết nối đến server...');
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [qrCodeUrl, setQrCodeUrl] = useState(null);
     const [messages, setMessages] = useState([]);
 
+    const socketRef = useRef(null);
+
     useEffect(() => {
-        // 1. Lấy lịch sử tin nhắn cũ ngay khi tải trang
-        const fetchInitialState = async () => {
-            const initialState = await getZaloState();
-            setIsLoggedIn(initialState.isLoggedIn);
-            setMessages(initialState.messages);
-            if (initialState.isLoggedIn) {
-                setStatus('Đã kết nối và đang lắng nghe tin nhắn...');
-            } else {
-                setStatus('Chưa kết nối. Kiểm tra console của server.');
+        if (!socketRef.current) {
+            const socket = io();
+            socketRef.current = socket;
+
+            socket.on('connect', () => {
+                console.log('[CLIENT-SIDE] ✅ SUCCESS: Connected to WebSocket server!');
+                socket.emit('get_initial_state');
+            });
+
+            socket.on('login_status', (data) => {
+                console.log('[CLIENT-SIDE] Received login_status:', data);
+                setIsLoggedIn(data.isLoggedIn);
+                if (data.isLoggedIn) {
+                    setStatus('Đã kết nối và đang lắng nghe tin nhắn...');
+                    setQrCodeUrl(null);
+                } else {
+                    setStatus('Sẵn sàng để đăng nhập.');
+                }
+            });
+
+            socket.on('qr_code_generated', (dataUrl) => {
+                // --- LOG 4: KHI CLIENT NHẬN ĐƯỢC QR ---
+                console.log('[CLIENT-SIDE] ✅ SUCCESS: Received qr_code_generated event!');
+                setQrCodeUrl(dataUrl);
+                setStatus('Vui lòng quét mã QR bằng ứng dụng Zalo...');
+            });
+
+            socket.on('new_zalo_message', (newMessage) => {
+                console.log('[CLIENT-SIDE] Received new_zalo_message:', newMessage);
+                setMessages((prevMessages) => [newMessage, ...prevMessages]);
+            });
+
+            socket.on('login_error', (error) => {
+                console.log('[CLIENT-SIDE] Received login_error:', error);
+                setStatus(`Lỗi đăng nhập: ${error.message}`);
+                setQrCodeUrl(null);
+            });
+        }
+
+        return () => {
+            if (socketRef.current) {
+                socketRef.current.disconnect();
+                socketRef.current = null;
             }
         };
-        fetchInitialState();
+    }, []);
 
-        // 2. Thiết lập kết nối WebSocket
-        const socket = io();
-
-        socket.on('connect', () => {
-            console.log('Connected to WebSocket server!');
-        });
-
-        // 3. Lắng nghe sự kiện 'new_zalo_message' từ server
-        socket.on('new_zalo_message', (newMessage) => {
-            console.log('Received new message from server:', newMessage);
-            // Thêm tin nhắn mới vào đầu danh sách
-            setMessages((prevMessages) => [newMessage, ...prevMessages]);
-        });
-
-        socket.on('disconnect', () => {
-            console.log('Disconnected from WebSocket server.');
-        });
-
-        // 4. Dọn dẹp: Ngắt kết nối khi component bị hủy
-        return () => {
-            socket.disconnect();
-        };
-
-    }, []); // Mảng rỗng đảm bảo useEffect chỉ chạy một lần
+    const requestQrLogin = () => {
+        if (socketRef.current) {
+            setStatus('Đang yêu cầu mã QR, vui lòng chờ...');
+            socketRef.current.emit('request_qr_login');
+        }
+    };
 
     return (
         <div style={{ fontFamily: 'sans-serif', padding: '2rem', maxWidth: '800px', margin: 'auto' }}>
-            <h1>Zalo Listener (Real-time with WebSockets)</h1>
+            <h1>Zalo Listener (Real-time with QR Login)</h1>
             <hr style={{ margin: '1rem' }} />
+
             <div style={{ marginBottom: '2rem', padding: '1rem', border: '1px solid #ccc', borderRadius: '8px' }}>
                 <p><strong>Trạng thái:</strong> {status}</p>
+                {!isLoggedIn && !qrCodeUrl && (
+                    <button onClick={requestQrLogin} style={{ padding: '0.5rem 1rem', fontSize: '1rem' }}>
+                        Đăng nhập bằng mã QR
+                    </button>
+                )}
             </div>
 
-            {isLoggedIn ? (
+            {qrCodeUrl && (
+                <div style={{ textAlign: 'center', padding: '1rem', border: '1px solid #eee', borderRadius: '8px' }}>
+
+                    <img src={qrCodeUrl} alt="Zalo QR Code" style={{ width: '250px', height: '250px' }} />
+                </div>
+            )}
+
+            {isLoggedIn && (
                 <div>
                     <h2>Tin nhắn nhận được</h2>
                     <MessageList messages={messages} />
                 </div>
-            ) : (
-                <p>Đang chờ kết nối từ server...</p>
             )}
         </div>
     );
