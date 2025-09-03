@@ -1,6 +1,5 @@
 'use client';
 
-// Component này chỉ có một nhiệm vụ: nhận vào một mảng tin nhắn và hiển thị chúng.
 export default function MessageList({ messages }) {
     const styles = {
         container: {
@@ -8,9 +7,9 @@ export default function MessageList({ messages }) {
             border: '1px solid #e0e0e0',
             borderRadius: '8px',
             padding: '16px',
-            overflowY: 'auto', // Thêm thanh cuộn khi tin nhắn đầy
+            overflowY: 'auto',
             display: 'flex',
-            flexDirection: 'column-reverse', // Đảo ngược để tin mới nhất ở dưới cùng
+            flexDirection: 'column-reverse',
             backgroundColor: '#f9f9f9',
         },
         emptyState: {
@@ -25,7 +24,7 @@ export default function MessageList({ messages }) {
             borderRadius: '18px',
             marginBottom: '10px',
             maxWidth: '75%',
-            alignSelf: 'flex-start', // Tin nhắn của người khác luôn ở bên trái
+            alignSelf: 'flex-start',
             border: '1px solid #eee',
             boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
         },
@@ -45,13 +44,12 @@ export default function MessageList({ messages }) {
         },
         content: {
             margin: 0,
-            wordWrap: 'break-word', // Tự động xuống dòng cho tin nhắn dài
+            wordWrap: 'break-word',
         }
     };
 
     return (
         <div style={styles.container}>
-            {/* Thêm một div trống để đẩy các tin nhắn lên trên khi container bị đảo ngược */}
             <div style={{ flexGrow: 1 }}></div>
             {messages.length > 0 ? (
                 messages.map((msg) => (

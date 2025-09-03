@@ -12,6 +12,14 @@ export default function ZaloPage() {
 
     const socketRef = useRef(null);
 
+    // Hàm yêu cầu QR, tách ra để có thể gọi lại
+    const requestQrLogin = () => {
+        if (socketRef.current) {
+            setStatus('Đang yêu cầu mã QR, vui lòng chờ...');
+            socketRef.current.emit('request_qr_login');
+        }
+    };
+
     useEffect(() => {
         if (!socketRef.current) {
             const socket = io();
@@ -24,17 +32,23 @@ export default function ZaloPage() {
 
             socket.on('login_status', (data) => {
                 console.log('[CLIENT-SIDE] Received login_status:', data);
+                const wasLoggedIn = isLoggedIn;
                 setIsLoggedIn(data.isLoggedIn);
+
                 if (data.isLoggedIn) {
                     setStatus('Đã kết nối và đang lắng nghe tin nhắn...');
                     setQrCodeUrl(null);
                 } else {
-                    setStatus('Sẵn sàng để đăng nhập.');
+                    if (wasLoggedIn) {
+                        setStatus(`Phiên hết hạn: ${data.reason || 'Unknown reason'}. Đang tự động lấy QR mới...`);
+                        requestQrLogin();
+                    } else {
+                        setStatus('Sẵn sàng để đăng nhập.');
+                    }
                 }
             });
 
             socket.on('qr_code_generated', (dataUrl) => {
-                // --- LOG 4: KHI CLIENT NHẬN ĐƯỢC QR ---
                 console.log('[CLIENT-SIDE] ✅ SUCCESS: Received qr_code_generated event!');
                 setQrCodeUrl(dataUrl);
                 setStatus('Vui lòng quét mã QR bằng ứng dụng Zalo...');
@@ -58,18 +72,11 @@ export default function ZaloPage() {
                 socketRef.current = null;
             }
         };
-    }, []);
-
-    const requestQrLogin = () => {
-        if (socketRef.current) {
-            setStatus('Đang yêu cầu mã QR, vui lòng chờ...');
-            socketRef.current.emit('request_qr_login');
-        }
-    };
+    }, [isLoggedIn]);
 
     return (
         <div style={{ fontFamily: 'sans-serif', padding: '2rem', maxWidth: '800px', margin: 'auto' }}>
-            <h1>Zalo Listener (Real-time with QR Login)</h1>
+            <h1>Zalo Listener (Auto-Reconnect)</h1>
             <hr style={{ margin: '1rem' }} />
 
             <div style={{ marginBottom: '2rem', padding: '1rem', border: '1px solid #ccc', borderRadius: '8px' }}>
