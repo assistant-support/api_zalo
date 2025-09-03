@@ -14,20 +14,23 @@ RUN \
   else echo "Lockfile not found." && exit 1; \
   fi
 
-
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
+# Cài các phụ thuộc cần thiết cho sharp trên Alpine
+RUN apk add --no-cache \
+    build-base \
+    libvips-dev \
+    && npm install --include=optional sharp
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-
-# COPY .env.production.sample .env.production
+# Build dự án
 RUN npm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
-WORKDIR /app 
+WORKDIR /app
 ENV NODE_OPTIONS=--openssl-legacy-provider
 ENV NODE_ENV=production
 # Cấu hình biến môi trường cho Mongoose và các biến khác
