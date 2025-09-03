@@ -5,14 +5,8 @@ FROM node:22-alpine AS base
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
-
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
-RUN \
-  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+COPY package*.json ./
+RUN npm ci
 
 # 3. Builder Stage
 FROM base AS builder
@@ -26,14 +20,14 @@ FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
+# Add "type": "module" to package.json
+COPY package.json .
 
 # Tạo user và group để bảo mật
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Cài đặt chỉ các dependencies cần thiết cho production
-# THAY ĐỔI Ở ĐÂY: Sao chép cả package-lock.json
-COPY package*.json ./
 RUN npm ci --omit=dev
 
 # Sao chép các file đã build và các file custom server
@@ -42,14 +36,14 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/lib ./lib
 COPY --from=builder /app/server.js ./server.js
 
-# Phân quyền cho thư mục .next
-RUN chown -R nextjs:nodejs .next
+# THAY ĐỔI Ở ĐÂY: Phân quyền cho toàn bộ thư mục ứng dụng
+RUN chown -R nextjs:nodejs .
 
 # Chuyển sang user nextjs
 USER nextjs
 
-EXPOSE 4003
-ENV PORT=4003
+EXPOSE 4002
+ENV PORT=4002
 
-# Lệnh khởi động vẫn là file server.js
+# Lệnh khởi động
 CMD ["node", "server.js"]
