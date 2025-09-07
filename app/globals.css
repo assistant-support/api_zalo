@@ -1,26 +1,117 @@
 @import "tailwindcss";
 
+/* ===== Tokens ===== */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --primary: #6667AB;
+  --primary-50: color-mix(in oklab, var(--primary) 10%, white);
+  --primary-100: color-mix(in oklab, var(--primary) 20%, white);
+  --primary-200: color-mix(in oklab, var(--primary) 35%, white);
+  --primary-300: color-mix(in oklab, var(--primary) 50%, white);
+  --primary-400: color-mix(in oklab, var(--primary) 65%, white);
+  --primary-500: color-mix(in oklab, var(--primary) 78%, white);
+  --primary-600: var(--primary);
+  --primary-700: color-mix(in oklab, var(--primary) 80%, black);
+  --primary-800: color-mix(in oklab, var(--primary) 88%, black);
+  --primary-900: color-mix(in oklab, var(--primary) 94%, black);
+
+  --success-50: #ecfdf5;
+  --success-600: #059669;
+  --warning-50: #fffbeb;
+  --warning-600: #d97706;
+  --danger-50: #fef2f2;
+  --danger-200: #fecaca;
+  --danger-700: #b91c1c;
+
+  --surface: #ffffff;
+  --surface-2: #f6f7fb;
+  --text: #0f172a;
+  --muted: #6b7280;
+  --border: color-mix(in oklab, var(--text) 12%, white);
+  --ring: var(--primary-300);
+
+  /* Fixed border radius for the whole project */
+  --radius: 6px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
+    border-radius: var(--radius);
+    --tw-ring-color: var(--ring);
   }
+  .btn-primary { @apply text-white shadow-sm; background: var(--primary-600); }
+  .btn-primary:hover { background: var(--primary-700); }
+  .btn-primary:active { background: var(--primary-800); }
+
+  .btn-outline {
+    @apply border; border-color: var(--border); color: var(--text); background: var(--surface);
+    border-radius: var(--radius);
+  }
+  .btn-outline:hover { border-color: var(--primary-400); color: var(--primary-800); background: var(--primary-50); }
+
+  .input {
+    @apply w-full border px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1;
+    color: var(--text); background: var(--surface); border-color: var(--border); border-radius: var(--radius);
+  }
+  .input:focus { --tw-ring-color: var(--ring); border-color: var(--primary-300); }
+
+  /* === NEW: Unified system controls === */
+  /* 1) Icon button 1:1 (sidebar toggle, bell, etc.) */
+  .icon-btn {
+    @apply inline-flex items-center justify-center h-9 w-9 border transition select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
+    border-radius: var(--radius);
+    border-color: var(--border);
+    color: var(--text);
+    background: var(--surface);
+    --tw-ring-color: var(--ring);
+  }
+  .icon-btn:hover { background: var(--primary-50); color: var(--primary-800); border-color: var(--primary-300); }
+
+  /* 2) Square avatar (thu gọn ở sidebar) */
+  .avatar-sq {
+    @apply inline-flex items-center justify-center font-medium text-white;
+    width: 36px; height: 36px; border-radius: var(--radius);
+    background: var(--primary-700);
+  }
+
+  /* 3) Nav rows */
+  .nav-parent { @apply flex items-center gap-2 px-2 h-9 text-sm rounded; color: var(--muted); }
+  .nav-parent:hover { color: var(--text); background: color-mix(in oklab, var(--primary) 4%, white); }
+
+  .nav-child  { @apply flex items-center gap-2 px-2 h-9 rounded; }
+  .nav-child:hover { background: var(--primary-50); }
+  .nav-child--active { background: var(--primary-50); color: var(--primary-800); border-left: 2px solid var(--primary-300); }
+
+  /* 4) Dropdown menu */
+  .menu { @apply p-1; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 8px 24px rgba(15, 23, 42, .08); }
+  .menu-item { @apply flex items-center gap-2 px-3 h-9 rounded; }
+  .menu-item:hover { background: var(--primary-50); }
+  .menu-item--danger { color: var(--danger-700); }
+  .menu-item--danger:hover { background: var(--danger-50); }
+
+  /* 5) Brand label animation to avoid layout jump */
+  .brand-name { transition: width .2s ease, opacity .2s ease; }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+  .elev-1 { box-shadow: 0 1px 2px rgba(2, 6, 23, .04), 0 1px 1px rgba(2, 6, 23, .02); }
+  .bg-surface { background: var(--surface); }
+  .bg-surface-2 { background: var(--surface-2); }
+  .text-muted { color: var(--muted); }
+  .ring-primary { --tw-ring-color: var(--ring); }
+
+  /* Subtle entrance used in Template and various popovers */
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(4px);} to { opacity: 1; transform: translateY(0);} }
+  .animate-fadeInUp { animation: fadeInUp .18s ease-out; }
+
+  /* Common scale pop */
+  @keyframes pop { from { opacity: 0; transform: scale(.98);} to { opacity: 1; transform: scale(1);} }
+  .animate-pop { animation: pop .14s ease-out; }
+
+  /* Slide in from left (for optional use) */
+  @keyframes slideInLeft { from { opacity: 0; transform: translateX(-8px);} to { opacity: 1; transform: translateX(0);} }
+  .animate-slideInLeft { animation: slideInLeft .18s ease-out; }
 }
+
+html, body { height: 100%; }

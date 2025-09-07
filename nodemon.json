@@ -1,0 +1,13 @@
+{
+    "watch": [
+        "server.js",
+        "lib/",
+        "models/"
+    ],
+    "ext": "js,mjs,json",
+    "ignore": [
+        "node_modules/",
+        ".next/"
+    ],
+    "exec": "node server.js"
+}
