@@ -14,7 +14,7 @@ function toTitle(text) {
 export default function Breadcrumbs() {
     const pathname = usePathname();
     const segments = pathname.split("/").filter(Boolean);
-    const items = ["Dashboard", ...segments.map(toTitle)];
+    const items = [...segments.map(toTitle)];
 
     return (
         <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-sm">

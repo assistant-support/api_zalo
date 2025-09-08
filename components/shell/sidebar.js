@@ -6,67 +6,80 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { logoutAction } from '@/app/actions/auth.action';
 import {
-    Home,
-    FlaskConical,
-    Clock,
+    ServerCog,
+    ChartPie,
+    Combine,
     Star,
-    Settings,
+    BringToFront,
     Boxes,
-    BookOpenText,
+    Workflow,
     FileCode2,
     ChevronDown,
     LogOut,
     X,
     Users,
-    Bell, CreditCard, Gauge
+    Bell, ShieldQuestionMark,
+    MessageCircleCode,
+    UsersRound,
+    History,
+    BellRing,
+    MessageCircleMore,
+    MonitorCog,
+    Settings
 } from "lucide-react";
 
 
 const nav = [
-    { key: "home", label: "Home", icon: Home, href: "/" }, // mục đơn
-
+    {
+        key: "home",
+        label: "Tổng quan",
+        icon: ChartPie,
+        items: [
+            { href: "/", label: "Tổng quan", icon: UsersRound },
+            { href: "/sal/history", label: "Khách hàng", icon: History },
+            { href: "/sal/bell", label: "Hành động", icon: BellRing },
+            { href: "/sal/messages", label: "Phân bổ", icon: MessageCircleMore }
+        ],
+    },
     // mục nhóm
     {
-        key: "playground",
-        label: "Playground",
-        icon: FlaskConical,
+        key: "customer",
+        label: "Chăm sóc",
+        icon: UsersRound,
         items: [
-            { href: "/history", label: "History", icon: Clock },
-            { href: "/starred", label: "Starred", icon: Star },
-            { href: "/settings", label: "Settings", icon: Settings },
+            { href: "/sale", label: "Khách hàng", icon: UsersRound },
+            { href: "/sale/history", label: "Lịch sử gọi điện", icon: History },
+            { href: "/sale/bell", label: "Thông báo", icon: BellRing },
+            { href: "/sale/messages", label: "Tin nhắn", icon: MessageCircleMore }
         ],
     },
     {
-        key: "models",
-        label: "Models",
-        icon: Boxes,
+        key: "workflows",
+        label: "Lịch trình",
+        icon: Combine,
         items: [
-            { href: "/models/genesis", label: "Genesis", icon: Boxes },
-            { href: "/models/explorer", label: "Explorer", icon: Boxes },
-            { href: "/models/quantum", label: "Quantum", icon: Boxes },
-        ],
-    },
-    {
-        key: "docs",
-        label: "Documentation",
-        icon: BookOpenText,
-        items: [
-            { href: "/docs", label: "Overview", icon: BookOpenText },
-            { href: "/docs/api", label: "API", icon: FileCode2 },
-            { href: "/docs/guides", label: "Guides", icon: BookOpenText },
+            { href: "/workflows/genesis", label: "Lịch trình cố định", icon: Workflow },
+            { href: "/workflows/explorer", label: "Lịch trình tùy biến", icon: BringToFront },
         ],
     },
     {
         key: "settings",
-        label: "Settings",
+        label: "Cài đặt hệ thống",
         icon: Settings,
         items: [
-            { href: "/settings/general", label: "General", icon: Settings },
-            { href: "/settings/team", label: "Team", icon: Users },
-            { href: "/settings/billing", label: "Billing", icon: CreditCard },
-            { href: "/settings/limits", label: "Limits", icon: Gauge },
+            { href: "/service", label: "Dịch vụ", icon: ServerCog },
+            { href: "/proxy", label: "Quản lý Proxy", icon: ShieldQuestionMark }
         ],
     },
+    {
+        key: "zalos",
+        label: "Cài đặt Nâng cao",
+        icon: MonitorCog,
+        items: [
+            { href: "/zalo", label: "Quản lý Zalo", icon: MessageCircleCode },
+            { href: "/proxy", label: "Quản lý Proxy", icon: ShieldQuestionMark }
+        ],
+    }
 ];
 
 export default function Sidebar({
@@ -244,7 +257,7 @@ function NavGroups({ rail, pad, collapsed, openKeys, toggleGroup, isActive }) {
                                 title={collapsed ? n.label : undefined}
                             >
                                 <div
-                                    className="grid items-center w-full h-full min-w-0"
+                                    className="grid items-center w-full h-full min-w-0 cursor-pointer"
                                     style={{
                                         gridTemplateColumns: cols,
                                         transition: "grid-template-columns .22s cubic-bezier(.2,0,0,1)",
@@ -478,14 +491,18 @@ function AccountBlock({
                     }}
                 >
                     <div className="grid place-items-center">
-                        <div className="avatar-sq">S</div>
+                        <img
+                            src={session?.user?.image}
+                            alt="avatar"
+                            className="h-8 w-8 rounded-[var(--radius)]"
+                        />
                     </div>
 
                     {!collapsed && (
                         <div className="flex items-center gap-3 pr-2 min-w-0">
                             <div className="min-w-0 text-left">
-                                <div className="truncate leading-tight">shadcn</div>
-                                <div className="text-xs text-muted truncate">m@example.com</div>
+                                <div className="truncate leading-tight"> {session?.user?.name || 'User Name'}</div>
+                                <div className="text-xs text-muted truncate">   {session?.user?.email || 'User Email'}</div>
                             </div>
                             <div className="ml-auto">
                                 <ChevronDown size={18} />

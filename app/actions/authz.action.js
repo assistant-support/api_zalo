@@ -53,3 +53,4 @@ export async function filterFieldsFor(action, payload) {
 
     return { ok: true, data: filterUpdatePayload(payload, rule.allowedFields) };
 }
+
