@@ -4,27 +4,19 @@ import { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 
 /**
- * Popup — tái sử dụng, thuần Tailwind.
- * Props:
- *  - open: boolean
- *  - onClose: () => void
- *  - header: ReactNode (bắt buộc, luôn hiển thị)
- *  - footer?: ReactNode (tuỳ chọn)
- *  - widthClass?: string (max width)
- *  - disableOutsideClose?: boolean
- *
- * Đặc tính:
- *  - Hiệu ứng mở mượt.
- *  - Chiều cao tổng khối = max-h-[90vh].
- *  - Header/Footer cao bằng nhau (mặc định h-14).
- *  - Khu vực chính luôn có className 'scroll' để lăn nội dung.
+ * Popup tái sử dụng
+ * - Header luôn hiển thị (truyền vào qua prop `header`)
+ * - Footer tùy chọn
+ * - Hiệu ứng mở mượt, overlay blur
+ * - Panel max-h = 90vh, main luôn scroll
+ * - Header/Footer cao bằng nhau (h-14)
  */
 export default function Popup({
     open,
     onClose,
     header,
     footer,
-    widthClass = 'max-w-3xl',
+    widthClass = 'max-w-lg', // gợi ý mặc định giống demo (có thể truyền 'max-w-3xl' khi cần)
     disableOutsideClose = false,
     children,
 }) {
@@ -34,7 +26,6 @@ export default function Popup({
     // mount animation
     useEffect(() => {
         if (open) {
-            // next frame để transition mượt
             const t = requestAnimationFrame(() => setShow(true));
             return () => cancelAnimationFrame(t);
         } else {
@@ -42,7 +33,7 @@ export default function Popup({
         }
     }, [open]);
 
-    // escape để đóng
+    // ESC để đóng
     useEffect(() => {
         if (!open) return;
         const onKey = (e) => e.key === 'Escape' && onClose?.();
@@ -50,7 +41,7 @@ export default function Popup({
         return () => window.removeEventListener('keydown', onKey);
     }, [open, onClose]);
 
-    // click outside
+    // outside click
     const onOverlayClick = (e) => {
         if (disableOutsideClose) return;
         if (panelRef.current && !panelRef.current.contains(e.target)) onClose?.();
@@ -60,26 +51,39 @@ export default function Popup({
 
     return (
         <div
-            className={`fixed inset-0 z-50 flex items-start justify-center p-4 bg-black/40 transition-opacity ${show ? 'opacity-100' : 'opacity-0'
-                }`}
+            role="dialog"
+            aria-modal="true"
+            className={`fixed inset-0 z-50 flex items-center justify-center p-4
+        bg-black/45 backdrop-blur-[2px]
+        transition-opacity duration-200 ease-out
+        ${show ? 'opacity-100' : 'opacity-0'}`}
             onMouseDown={onOverlayClick}
         >
             <div
                 ref={panelRef}
-                className={`w-full ${widthClass} max-h-[90vh] bg-[var(--surface)] border shadow-xl rounded-[6px] flex flex-col transition transform ${show ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-2 scale-95'
-                    }`}
+                // Card
+                className={`w-full ${widthClass} max-h-[90vh]
+          bg-[var(--surface)] text-[var(--text)]
+          border rounded-[6px]
+          shadow-[0_20px_60px_rgba(0,0,0,0.16)] ring-1 ring-black/5
+          flex flex-col
+          transform transition duration-200 ease-out will-change-transform
+          ${show ? 'translate-y-0 scale-100 opacity-100' : 'translate-y-2 scale-[0.98] opacity-0'}`}
                 style={{ borderColor: 'var(--border)' }}
                 onMouseDown={(e) => e.stopPropagation()}
             >
-                {/* Header (h-14) */}
+                {/* Header */}
                 <div
-                    className="h-14 flex items-center justify-between px-4 border-b"
+                    className="h-14 shrink-0 flex items-center justify-between px-6 border-b"
                     style={{ borderColor: 'var(--border)' }}
                 >
-                    <div className="font-semibold truncate">{header}</div>
+                    <div className="min-w-0 truncate text-[15px] font-semibold">
+                        {header}
+                    </div>
                     <button
                         onClick={onClose}
-                        className="p-2 rounded-[6px] hover:bg-[var(--surface-2)]"
+                        className="p-2 rounded-[6px] hover:bg-[var(--surface-2)] focus:outline-none focus-visible:ring-2"
+                        style={{ boxShadow: '0 0 0 3px transparent', '--tw-ring-color': 'var(--ring)' }}
                         aria-label="Đóng"
                     >
                         <X className="w-4 h-4" />
@@ -87,14 +91,14 @@ export default function Popup({
                 </div>
 
                 {/* Main (scroll) */}
-                <div className="scroll flex-1 overflow-y-auto px-4 py-4">
+                <div className="scroll flex-1 overflow-y-auto px-6 py-5">
                     {children}
                 </div>
 
-                {/* Footer (h-14) — tuỳ chọn */}
+                {/* Footer (tùy chọn) */}
                 {footer !== undefined && (
                     <div
-                        className="h-14 flex items-center justify-end gap-2 px-4 border-t"
+                        className="h-14 shrink-0 flex items-center justify-end gap-2 px-6 border-t"
                         style={{ borderColor: 'var(--border)' }}
                     >
                         {footer}

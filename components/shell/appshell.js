@@ -41,7 +41,7 @@ export default function AppShell({ session, children }) {
             />
 
             {/* Main */}
-            <div className="flex-1 min-w-0 flex flex-col">
+            <div className="flex-1 min-w-0 flex flex-col" style={{ height: '100vh' }}>
                 {/* Header */}
                 <header className="sticky top-0 z-30 bg-surface border-b" style={{ borderColor: "var(--border)" }}>
                     <div className="h-14 flex items-center gap-2 px-3">
@@ -79,7 +79,7 @@ export default function AppShell({ session, children }) {
                 </header>
 
                 {/* Page content */}
-                <main className="flex-1 min-w-0">{children}</main>
+                <main className="flex-1 min-w-0 flex overflow-hidden">{children}</main>
             </div>
         </div>
     );

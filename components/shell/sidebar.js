@@ -25,11 +25,12 @@ import {
     BellRing,
     MessageCircleMore,
     MonitorCog,
-    Settings
+    Settings,
+    SquareCode
 } from "lucide-react";
 
 
-const nav = [
+export const nav = [
     {
         key: "home",
         label: "Tổng quan",
@@ -47,7 +48,7 @@ const nav = [
         label: "Chăm sóc",
         icon: UsersRound,
         items: [
-            { href: "/sale", label: "Khách hàng", icon: UsersRound },
+            { href: "/customers", label: "Khách hàng", icon: UsersRound },
             { href: "/sale/history", label: "Lịch sử gọi điện", icon: History },
             { href: "/sale/bell", label: "Thông báo", icon: BellRing },
             { href: "/sale/messages", label: "Tin nhắn", icon: MessageCircleMore }
@@ -58,17 +59,17 @@ const nav = [
         label: "Lịch trình",
         icon: Combine,
         items: [
-            { href: "/workflows/genesis", label: "Lịch trình cố định", icon: Workflow },
+            { href: "/workflow", label: "Lịch trình cố định", icon: Workflow },
             { href: "/workflows/explorer", label: "Lịch trình tùy biến", icon: BringToFront },
         ],
     },
     {
-        key: "settings",
+        key: "Dịch vụ",
         label: "Cài đặt hệ thống",
         icon: Settings,
         items: [
             { href: "/service", label: "Dịch vụ", icon: ServerCog },
-            { href: "/proxy", label: "Quản lý Proxy", icon: ShieldQuestionMark }
+            { href: "/source", label: "Form nguồn", icon: SquareCode }
         ],
     },
     {
@@ -84,7 +85,6 @@ const nav = [
 
 export default function Sidebar({
     collapsed,
-    setCollapsed,
     accountOpen,
     setAccountOpen,
     mobileOpen,

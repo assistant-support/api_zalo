@@ -52,7 +52,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     email: user.email,
                     image: user.avatar,
                     username: user.username,
-                    role: 'user',
+                    role: 'sale',
                     provider: 'credentials',
                     status: user.status,
                 };
@@ -99,7 +99,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             if (user) {
                 token.uid = user.id;
                 token.username = user.username;
-                token.role = user.role ?? 'user';
+                token.role = user.role ?? 'sale';
                 token.status = user.status ?? 'active';
                 return token;
             }
@@ -121,13 +121,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                         // chỉ populate khi cần
                         const doc = await User.findById(u._id).populate({ path: 'roles', select: 'name isImmutable' });
                         const isAdmin = (doc.roles || []).some((r) => r?.name === 'admin' || r?.isImmutable);
-                        token.role = isAdmin ? 'admin' : 'user';
+                        token.role = isAdmin ? 'admin' : 'sale';
                     } catch {
-                        token.role = token.role || 'user';
+                        token.role = token.role || 'sale';
                     }
                 }
             } catch {
-                token.role = token.role || 'user';
+                token.role = token.role || 'sale';
             }
             return token;
         },
@@ -135,7 +135,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         async session({ session, token }) {
             session.user.id = token.uid;
             session.user.username = token.username;
-            session.user.role = token.role || 'user';
+            session.user.role = token.role || 'sale';
             session.user.status = token.status || 'active';
             return session;
         },

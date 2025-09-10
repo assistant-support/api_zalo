@@ -1,4 +1,3 @@
-// /server.js
 import 'dotenv/config';
 import next from 'next';
 import { createServer } from 'http';

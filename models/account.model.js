@@ -42,7 +42,7 @@ const UserSchema = new Schema({
     password: { type: String, required: true, select: false }, // Mật khẩu đã được mã hóa. `select: false` để không trả về trường này trong các truy vấn mặc định.
     avatar: { type: String, default: 'https://lh3.googleusercontent.com/d/1iq7y8VE0OyFIiHmpnV_ueunNsTeHK1bG' }, // URL ảnh đại diện, có ảnh mặc định.
     // --- Phân quyền và Trạng thái ---
-    roles: [{ type: Schema.Types.ObjectId, ref: 'role' }], // Vai trò người dùng.
+    roles: { type: String, default: 'sale' }, // Vai trò người dùng.
     status: { type: String, enum: ['active', 'pending', 'suspended', 'deactivated'], default: 'active', index: true }, // Trạng thái tài khoản, được index để lọc người dùng nhanh (ví dụ: trong trang admin).
     // --- Tích hợp NextAuth/Auth.js ---
     provider: { type: String, enum: ['credentials', 'google', 'github', 'facebook'], default: 'credentials' }, // Phương thức đăng ký, hữu ích khi dùng nhiều nhà cung cấp xác thực.
@@ -55,7 +55,10 @@ const UserSchema = new Schema({
     // --- Khôi phục Mật khẩu ---
     passwordResetToken: { type: String, select: false }, // Token dùng một lần để reset mật khẩu.
     passwordResetExpires: { type: Date, select: false }, // Thời gian hết hạn của token reset.
-
+    group: {
+        type: String,
+        enum: ['noi_khoa', 'ngoai_khoa']
+    }
 }, {
     // Tự động thêm hai trường createdAt và updatedAt.
     timestamps: true,

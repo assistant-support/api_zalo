@@ -16,16 +16,7 @@ async function dataService(id) {
   const pipeline = [
     ...matchStage,
     { $sort: { createdAt: -1 } },
-    // tính tổng chi phí và đếm số lead đang tham chiếu service này
-    {
-      $addFields: {
-        totalCost: {
-          $sum: {
-            $map: { input: '$costs', as: 'c', in: { $ifNull: ['$$c.amount', 0] } }
-          }
-        }
-      }
-    },
+    // Đếm số lead đang tham chiếu service này (nếu có collection 'leads')
     {
       $lookup: {
         from: 'leads',

@@ -10,12 +10,12 @@ const FormSchema = new Schema(
         area: { type: String, trim: true },
         source: { type: Schema.Types.ObjectId, ref: 'form', required: true },
         sourceDetails: { type: String, trim: true },
-        uid: { type: [{ zalo: { type: Schema.Types.ObjectId, ref: 'user' }, uid: String, isFriend: { type: Number, default: 0 }, isReques: { type: Number, default: 0 } }] },
+        uid: { type: [{ zalo: { type: Schema.Types.ObjectId, ref: 'account' }, uid: String, isFriend: { type: Number, default: 0 }, isReques: { type: Number, default: 0 } }] },
         createAt: { type: Date, default: Date.now },
-        care: { type: [{ content: String, step: Number, createBy: { type: Schema.Types.ObjectId, ref: 'user' }, createAt: { type: Date, default: Date.now } }], default: [] },
+        care: { type: [{ content: String, step: Number, createBy: { type: Schema.Types.ObjectId, ref: 'account' }, createAt: { type: Date, default: Date.now } }], default: [] },
         zaloavt: String,
         zaloname: String,
-        assignees: { type: [{ user: { type: Schema.Types.ObjectId, ref: 'user' }, group: { type: String, enum: ['noi_khoa', 'ngoai_khoa'] }, assignedAt: { type: Date, default: Date.now } }], default: [] },
+        assignees: { type: [{ user: { type: Schema.Types.ObjectId, ref: 'account' }, group: { type: String, enum: ['noi_khoa', 'ngoai_khoa'] }, assignedAt: { type: Date, default: Date.now } }], default: [] },
         pipelineStatus: {
             type: [String],
             enum: ['new_unconfirmed_1', 'missing_info_1', 'not_valid_1', 'msg_success_2', 'msg_error_2', 'duplicate_merged_1', 'rejected_immediate_1', 'valid_1', 'noikhoa_3', 'ngoaikhoa_3', 'undetermined_3', 'consulted_pending_4', 'scheduled_unconfirmed_4', 'callback_4', 'not_interested_4',
@@ -26,18 +26,13 @@ const FormSchema = new Schema(
         zaloPhase: { type: String, enum: ['welcome', 'nurturing', 'pre_surgery', 'post_surgery', 'longterm'], default: null },
         tags: { type: [{ type: Schema.Types.ObjectId, ref: 'service' }], default: [] },
         roles: {
-            type: [{ type: Schema.Types.ObjectId, ref: 'user', required: true }],
+            type: [{ type: Schema.Types.ObjectId, ref: 'account', required: true }],
             default: []
         },
         workflowTemplates: { type: [Schema.Types.ObjectId], ref: 'workflowtemplate', default: [] },
-        assignee: {
-            type: Schema.Types.ObjectId,
-            ref: 'user',
-            default: null
-        },
         assignedBy: {
             type: Schema.Types.ObjectId,
-            ref: 'user',
+            ref: 'account',
             default: null
         },
         assignedAt: {
@@ -52,7 +47,7 @@ const FormSchema = new Schema(
             status: { type: String, enum: ['new', 'in_progress', 'completed'], default: 'new' },
             notes: { type: String, trim: true },
             closedAt: { type: Date },
-            closedBy: { type: Schema.Types.ObjectId, ref: 'user' },
+            closedBy: { type: Schema.Types.ObjectId, ref: 'account' },
             invoiceDriveId: { type: String },
             revenue: { type: Number, default: 0 },
         }
