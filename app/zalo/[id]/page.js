@@ -2,7 +2,7 @@
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { getSocket } from '#lib/socket-client';
+import { getSocket } from '../../../lib/socket-client';
 import { Search, Send, Paperclip, Bell, CheckCheck, FileText, Image as ImageIcon, Video, FileAudio, File } from 'lucide-react';
 
 function cx(...a) { return a.filter(Boolean).join(' '); }

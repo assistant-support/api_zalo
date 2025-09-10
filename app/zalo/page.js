@@ -3,7 +3,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { getSocket } from "#lib/socket-client";
+import { getSocket } from "../../lib/socket-client";
 import { MessageCircle, Power, QrCode, RefreshCw, Search, User } from "lucide-react";
 
 function QrModal({ open, onClose, qrImage, title }) {

@@ -6,7 +6,7 @@ import { connectMongo } from '@/lib/db_connect';
 
 import WorkflowTemplate from '@/models/workflow-template.model.js';
 import CustomerWorkflow from '@/models/customer-workflow.model.js';
-import Customer from '@/models/customer.model'; // giữ theo convention bạn đang dùng
+import Customer from '@/models/customer.model'; 
 
 // -----------------------------
 // TAGS
