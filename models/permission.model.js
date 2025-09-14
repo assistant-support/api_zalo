@@ -1,27 +1,43 @@
-
+// /models/permission.model.js
 import mongoose, { Schema } from 'mongoose';
 
 /**
- * @typedef {object} Permission
- * @property {string} action - Tên định danh duy nhất cho hành động (ví dụ: 'view_users').
- * @property {string} group - Nhóm chức năng để dễ quản lý trong UI (ví dụ: 'User Management').
- * @property {string} description - Mô tả chi tiết về chức năng này.
+ * === Permission (Chức năng) ===
+ * - Mục tiêu: định nghĩa "hành động cụ thể" có thể cấp cho Role (vd: user:list, user:update).
+ * - Dùng ở UI và BE để kiểm soát: "ai được phép làm gì".
+ *
+ * Trường bắt buộc:
+ *  - action       : Mã hành động (duy nhất). Ví dụ: 'user:list', 'user:update'.
+ *  - group        : Nhóm chức năng (giúp gom & lọc trên UI). Ví dụ: 'Users', 'Products'.
+ *  - description  : Mô tả chi tiết để team hiểu tác dụng.
+ *
+ * Trường tiện ích cho UI/Quy ước:
+ *  - label        : Tên hiển thị thân thiện (vd: 'Xem người dùng'). Nếu không set, backend có thể fallback = action.
+ *  - tags         : Mảng tag để lọc/gợi ý (vd: ['users','read']). Dùng tự do theo nhu cầu team.
+ *
+ * Ghi chú quản lý:
+ *  - Không gắn điều kiện (conditions) hay allowedFields ở đây. Những thứ đó thuộc "binding" khi gán vào Role,
+ *    vì mỗi Role có thể dùng cùng 1 Permission với điều kiện khác nhau (ABAC).
  */
+const PermissionSchema = new Schema(
+    {
+        action: { type: String, required: true, unique: true, trim: true, index: true },
+        group: { type: String, required: true, trim: true },
+        description: { type: String, required: true },
 
-/**
- * Schema Permission định nghĩa một hành động đơn lẻ có thể được cấp phép trong hệ thống.
- * Ví dụ: xem danh sách người dùng, tạo sản phẩm, xóa bài viết.
- * Việc tách riêng model này giúp admin có thể tự định nghĩa và mở rộng các chức năng
- * có thể phân quyền mà không cần can thiệp vào mã nguồn.
- */
-const PermissionSchema = new Schema({
-    action: { type: String, required: true, unique: true, trim: true, index: true }, // Tên định danh duy nhất cho quyền, ví dụ: 'view_users'. Được index để tra cứu nhanh.
-    group: { type: String, required: true, trim: true }, // Nhóm quyền để gom lại trên giao diện admin, ví dụ: 'User Management', 'Product Management'.
-    description: { type: String, required: true }, // Mô tả chi tiết để admin hiểu rõ quyền này dùng để làm gì.
-}, {
-    timestamps: true,
-});
+        // Tên hiển thị cho UI/biểu mẫu gán quyền (không bắt buộc)
+        label: { type: String, default: '' },
 
-const Permission = mongoose.models.permission || mongoose.model('permission', PermissionSchema);
+        // Gắn nhãn để tìm/nhóm permission nhanh (không bắt buộc)
+        tags: { type: [String], default: [], index: true },
+    },
+    {
+        timestamps: true,
+    }
+);
+
+// Đăng ký model 1 lần cho connection hiện tại
+const Permission =
+    mongoose.models.permission || mongoose.model('permission', PermissionSchema);
 
 export default Permission;

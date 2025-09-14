@@ -1,38 +1,39 @@
-
+// /models/role.model.js
 import mongoose, { Schema } from 'mongoose';
 
 /**
- * Schema Role phiên bản nâng cấp.
- * Thay vì một 'scope' đơn giản, mỗi permission giờ đây sẽ có:
- * 1. `conditions`: Một đối tượng query của MongoDB để định nghĩa ĐIỀU KIỆN mà
- * hành động được phép thực hiện. Ví dụ: chỉ được update khách hàng do mình phụ trách.
- * 2. `allowedFields`: Một danh sách các trường được phép xem/chỉnh sửa, cung cấp
- * bảo mật ở cấp độ trường dữ liệu (field-level security).
- * Đây là một kiến trúc RBAC/ABAC mạnh mẽ, linh hoạt cho mọi loại dự án.
+ * === Role (Quyền) ===
+ * - Là “gói” permission áp cho user.
+ * - Mỗi binding permission trong Role có thể kèm:
+ *    + conditions   : Object filter (ABAC) – giới hạn dữ liệu được phép thao tác.
+ *    + allowedFields: Mảng trường được phép sửa/xem (field-level security).
+ *
+ * Quy ước:
+ * - Role 'admin': là quyền quản trị hệ thống (isAdmin = role.name === 'admin').
+ * - Role có thể 'isImmutable' để tránh bị xoá/sửa ngoài ý muốn.
  */
-const RoleSchema = new Schema({
-    name: { type: String, required: true, unique: true },
-    description: { type: String },
-    isImmutable: { type: Boolean, default: false },
+const RoleSchema = new Schema(
+    {
+        name: { type: String, required: true, unique: true },
+        description: { type: String },
+        isImmutable: { type: Boolean, default: false },
 
-    permissions: [{
-        _id: false,
-        permission: { type: Schema.Types.ObjectId, ref: 'Permission', required: true },
+        permissions: [
+            {
+                _id: false,
+                // Trỏ về Permission – đã đồng bộ ref: 'permission' (đúng tên model)
+                permission: { type: Schema.Types.ObjectId, ref: 'permission', required: true },
 
-        // **ĐIỀU KIỆN LỌC DỮ LIỆU (ROW-LEVEL SECURITY)**
-        // Lưu một query MongoDB. Dùng biến {{currentUser.id}} để tham chiếu động.
-        // Ví dụ cho quyền update customer: { assignedTo: '{{currentUser.id}}' }
-        conditions: { type: Object, default: {} }, // Mặc định là object rỗng (không có điều kiện, tức là áp dụng cho tất cả).
+                // Điều kiện áp dụng (row-level). Có thể dùng biến '{{currentUser.id}}' khi evaluate phía BE.
+                conditions: { type: Object, default: {} },
 
-        // **CÁC TRƯỜNG ĐƯỢC PHÉP (FIELD-LEVEL SECURITY)**
-        // Mảng các trường được phép thao tác.
-        // Ví dụ cho quyền update customer: ['phone', 'address'] (không được sửa 'name' hay 'totalSpent')
-        // Dùng ['*'] để cho phép tất cả các trường.
-        allowedFields: { type: [String], default: [] }, // Mặc định là mảng rỗng (không được phép thao tác trường nào).
-    }],
-}, {
-    timestamps: true,
-});
+                // Trường được phép thao tác (field-level). ['*'] = cho phép tất cả.
+                allowedFields: { type: [String], default: [] },
+            },
+        ],
+    },
+    { timestamps: true }
+);
 
 const Role = mongoose.models.role || mongoose.model('role', RoleSchema);
 export default Role;

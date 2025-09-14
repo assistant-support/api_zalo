@@ -9,6 +9,5 @@ export { auth as middleware } from "@/auth";
 export const config = {
     matcher: [
         "/zalo/:path*", // Bảo vệ trạng zalo và các trang con của zalo (vd: /zalo/12345)
-        "/api/private/:path*", // Bảo vệ tất cả API private (vd: /api/private/...)
     ],
 };

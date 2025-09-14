@@ -5,8 +5,10 @@ import { redirect } from 'next/navigation';
 import {
     LogIn, Mail, Lock, Users, Network, Settings2, ShieldCheck, Gauge, Globe
 } from 'lucide-react';
+import { AuthError } from 'next-auth';
 
 export default async function LoginPage({ searchParams }) {
+    searchParams = await searchParams
     const session = await auth();
     if (session?.user) redirect('/');
 
@@ -16,14 +18,34 @@ export default async function LoginPage({ searchParams }) {
         'use server';
         const email = formData.get('email');
         const password = formData.get('password');
-        await signIn('credentials', { email, password, redirectTo: '/' });
+
+        try {
+            await signIn('credentials', { email, password, redirectTo: '/' });
+            // thành công sẽ tự redirect; code dưới đây thường không chạy tới
+        } catch (err) {
+            console.log(err);
+            
+            if (err instanceof AuthError) {
+                // Sai tài khoản/mật khẩu -> quay lại /login và hiện banner lỗi (đã có sẵn ở UI)
+                if (err.type === 'CredentialsSignin') {
+                    redirect('/login?error=CredentialsSignin');
+                }
+                // Các lỗi sign-in khác (CSRF, cấu hình, v.v.)
+                redirect('/login?error=AuthError');
+            }
+            // Lỗi không xác định
+            redirect('/login?error=ServerError');
+        }
     }
 
     async function loginWithGoogle() {
         'use server';
-        await signIn('google', { redirectTo: '/' });
+        try {
+            await signIn('google', { redirectTo: '/' });
+        } catch {
+            redirect('/login?error=OAuthError');
+        }
     }
-
     return (
         <main className="min-h-screen grid lg:grid-cols-2 bg-[var(--surface-2)]">
             {/* Form */}

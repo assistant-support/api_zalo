@@ -32,6 +32,15 @@ import {
 
 export const nav = [
     {
+        key: "staff",
+        label: "Nhân sự",
+        icon: MonitorCog,
+        items: [
+            { href: "/staff/users", label: "Quản lý nhân sự", icon: MessageCircleCode },
+            { href: "/staff/roles", label: "Quản lý quyền hạn", icon: ShieldQuestionMark }
+        ],
+    },
+    {
         key: "zalos",
         label: "Cài đặt Nâng cao",
         icon: MonitorCog,
