@@ -32,47 +32,6 @@ import {
 
 export const nav = [
     {
-        key: "home",
-        label: "Tổng quan",
-        icon: ChartPie,
-        items: [
-            { href: "/", label: "Tổng quan", icon: UsersRound },
-            { href: "/sal/history", label: "Khách hàng", icon: History },
-            { href: "/sal/bell", label: "Hành động", icon: BellRing },
-            { href: "/sal/messages", label: "Phân bổ", icon: MessageCircleMore }
-        ],
-    },
-    // mục nhóm
-    {
-        key: "customer",
-        label: "Chăm sóc",
-        icon: UsersRound,
-        items: [
-            { href: "/customers", label: "Khách hàng", icon: UsersRound },
-            { href: "/sale/history", label: "Lịch sử gọi điện", icon: History },
-            { href: "/sale/bell", label: "Thông báo", icon: BellRing },
-            { href: "/sale/messages", label: "Tin nhắn", icon: MessageCircleMore }
-        ],
-    },
-    {
-        key: "workflows",
-        label: "Lịch trình",
-        icon: Combine,
-        items: [
-            { href: "/workflow", label: "Lịch trình cố định", icon: Workflow },
-            { href: "/workflows/explorer", label: "Lịch trình tùy biến", icon: BringToFront },
-        ],
-    },
-    {
-        key: "Dịch vụ",
-        label: "Cài đặt hệ thống",
-        icon: Settings,
-        items: [
-            { href: "/service", label: "Dịch vụ", icon: ServerCog },
-            { href: "/source", label: "Form nguồn", icon: SquareCode }
-        ],
-    },
-    {
         key: "zalos",
         label: "Cài đặt Nâng cao",
         icon: MonitorCog,

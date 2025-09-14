@@ -1,8 +1,14 @@
+// Cách dùng chính thống ở v5: export { auth as middleware } để kích hoạt authorized()
 export { auth as middleware } from "@/auth";
 
-// Protect everything except Next.js internals, public assets, the auth endpoints and the /login page itself
+/**
+ * Chỉ match những route thực sự cần bảo vệ.
+ * Lưu ý: KHÔNG đưa /login vào đây (để trang login tự redirect khi đã đăng nhập).
+ */
+
 export const config = {
     matcher: [
-        "/((?!_next/static|_next/image|favicon.ico|images|fonts|api/auth|login).*)",
+        "/zalo/:path*", // Bảo vệ trạng zalo và các trang con của zalo (vd: /zalo/12345)
+        "/api/private/:path*", // Bảo vệ tất cả API private (vd: /api/private/...)
     ],
 };
