@@ -13,7 +13,7 @@ import './models/realtime-message.model.js';
 
 const DEV = process.env.NODE_ENV !== 'production';
 const HOST = process.env.HOST || '0.0.0.0';
-const PORT = Number(process.env.PORT || 3000);
+const PORT = Number(process.env.PORT || 4002);
 
 async function start() {
     console.log('[server] booting…', { env: DEV ? 'dev' : 'prod', port: PORT });
